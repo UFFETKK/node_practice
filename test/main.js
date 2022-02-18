@@ -1,90 +1,54 @@
 const port = 3000,
   http = require("http"),
   httpStatus = require("http-status-codes"),
-  fs = require("fs");
+  router = require("./router"),
+  contentTypes = require("./content-types"),
+  utils = require("./utils");
 
-// 주석 1
-// const routeMap = {
-//   "/": "views/index.html",
-// };
+router.get("/", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.html);
+  utils.getFile("views/index.html", res);
+});
 
-// 주석 2
-// const getViewUrl = (url) => {
-//   return `views${url}.html`;
-// };
+router.get("/courses.html", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.html);
+  utils.getFile("views/courses.html", res);
+});
 
-const sendErrorResponse = (res) => {
-  res.writeHead(httpStatus.NOT_FOUND, {
-    "Content-Type": "text.html",
-  });
-  res.write("<h1>FILE NOT FOUND</h1>");
-  res.end();
-};
+router.get("/contact.html", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.html);
+  utils.getFile("views/contact.html", res);
+});
 
-http
-  .createServer((req, res) => {
-    // 주석 1
-    // res.writeHead(httpStatus.OK, {
-    //   "Content-Type": "text/html",
-    // });
-    // if (routeMap[req.url]) {
-    //   fs.readFile(routeMap[req.url], (err, data) => {
-    //     res.write(data);
-    //     res.end();
-    //   });
-    // } else {
-    //   res.end("<h1>sorry, not found</h1>");
-    // }
-    //주석2
-    // let viewUrl = getViewUrl(req.url);
-    // fs.readFile(viewUrl, (err, data) => {
-    //   if (err) {
-    //     res.writeHead(httpStatus.NOT_FOUND);
-    //     res.write("<h1>FILE NOT FOUND</h1>");
-    //   } else {
-    //     res.writeHead(httpStatus.OK, {
-    //       "Content-Type": "text.html",
-    //     });
-    //     res.write(data);
-    //   }
-    //   res.end();
-    // });
+router.post("/", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.html);
+  utils.getFile("views/thanks.html", res);
+});
 
-    let url = req.url;
-    if (url.indexOf(".html") !== -1) {
-      res.writeHead(httpStatus.OK, {
-        "Content-Type": "text/html",
-      });
-      customReadFile(`./views${url}`, res);
-    } else if (url.indexOf(".js") !== -1) {
-      res.writeHead(httpStatus.OK, {
-        "Content-Type": "text/css",
-      });
-      customReadFile(`./public/css${url}`, res);
-    } else if (url.indexOf(".png") !== -1) {
-      res.writeHead(httpStatus.OK, {
-        "Content-Type": "image/png",
-      });
-      customReadFile(`./public/images${url}`, res);
-    } else {
-      sendErrorResponse(res);
-    }
-  })
-  .listen(port);
-console.log(`the server has started and is listening on port number ${port}`);
+router.get("/people.jpg", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.jpg);
+  utils.getFile("public/images/people.jpg", res);
+});
 
-const customReadFile = (file_path, res) => {
-  if (fs.existsSync(file_path)) {
-    fs.readFile(file_path, (err, data) => {
-      if (err) {
-        console.log(err);
-        sendErrorResponse(res);
-        return;
-      }
-      res.write(data);
-      res.end();
-    });
-  } else {
-    sendErrorResponse(res);
-  }
-};
+router.get("/product.jpg", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.jpg);
+  utils.getFile("public/images/product.jpg", res);
+});
+
+router.get("/confetti_cuisine.css", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.css);
+  utils.getFile("public/css/confetti_cuisine.css", res);
+});
+
+router.get("/bootstrap.css", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.css);
+  utils.getFile("public/css/bootstrap.css", res);
+});
+
+router.get("/confetti_cusine.js", (req, res) => {
+  res.writeHead(httpStatus.OK, contentTypes.js);
+  utils.getFile("public/css/confetti_cusine.js", res);
+});
+
+http.createServer(router.handle).listen(port);
+console.log("the server has started and is listening on port number:" + port);
